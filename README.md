@@ -1,6 +1,6 @@
-## A simple Software Renderer
+## A simple Software Rasterizer
 
-This was primarily made as an exercise to try to learn and understand how graphics rendering works. A GPU usually abstracts away a lot of the details regarding how pixels are rendered into complex shapes and effects, and the math behind it. Being interested in this aspect of rendering, I decided to make a rasterizer based software renderer.
+This was primarily made as an exercise to try to learn and understand how graphics rendering works. A GPU usually abstracts away a lot of the details regarding how pixels are rendered into complex shapes and effects, and the math behind it. Being interested in this aspect of rendering, I decided to make a software rasterizer myself.
 
 Reminicient of the early days of gaming, this program could theoretically be used to make stylized games like [Starfox](https://en.wikipedia.org/wiki/Star_Fox_%281993_video_game%29), [Doom](https://en.wikipedia.org/wiki/Doom_(1993_video_game)), etc.
 
