@@ -1,5 +1,4 @@
 #include "defs.h"
-#include "gui.h"
 #include "linalg.h"
 #include "draw.h"
 #include "input.h"
@@ -175,7 +174,6 @@ double ms_per_frame = (1.0 / target_fps) * 1000;
 int main(int argc, char *argv[]) {
 	// As name suggests, initialize SDL.
 	init_sdl();
-	init_gui(window);
 
 	atexit(cleanup);
 	delta = create_timer();
@@ -186,7 +184,6 @@ int main(int argc, char *argv[]) {
 		update_input();
 
 		draw_loop(delta_time);
-		draw_gui();
 
 		mark_timer(delta);
 		double d_draw = (double)get_elapsed_time(delta) / 1e3;
