@@ -3,7 +3,6 @@
 #include "draw.h"
 #include "input.h"
 #include "timing.h"
-#include <math.h>
 #include <stdio.h>
 #include <SDL2/SDL_scancode.h>
 #include <SDL2/SDL_surface.h>
@@ -201,8 +200,11 @@ int main(int argc, char *argv[]) {
 
 		mark_timer(delta);
 		double d_draw = (double)get_elapsed_time(delta) / 1e3;
-		// fabs = floating abs
-		ms_sleep(fabs(ms_per_frame - d_draw));
+	
+		double sleep_ms = (ms_per_frame - d_draw);
+		sleep_ms = sleep_ms >= 0 ? sleep_ms : 0;
+
+		ms_sleep(sleep_ms);
 
 		mark_timer(delta);
 		delta_time = (double)get_elapsed_time(delta) / 1e6;
