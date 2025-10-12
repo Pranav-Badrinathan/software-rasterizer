@@ -1,7 +1,12 @@
 #include "linalg.h"
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-// VECTOR OPERATIONS
+/*
+* VECTOR OPERATIONS
+*/
 
 struct Vec4 vector_add(struct Vec4 *v1, struct Vec4 *v2) {
 	return (struct Vec4) {
@@ -55,7 +60,9 @@ struct Vec4 vector_norm(struct Vec4 *v) {
 	return vector_div(v, vector_mag(v));
 }
 
-// MATRIX OPERATIONS 
+/*
+* MATRIX OPERATIONS 
+*/
 
 struct Vec4 matrix_vec_mul(struct Mat4x4 *mat, struct Vec4 *v) {
 	struct Vec4 point = {0};
@@ -221,3 +228,30 @@ struct Mat4x4 get_view_matrix(const struct Mat4x4 cam_model) {
 	return matrix_transpose(&view);
 }
 
+/*
+* PRINT SECTION
+*/
+
+void print_vec4(struct Vec4 v, const char* label) {
+	printf("%s : [ %f, %f, %f, %f ]\n", label, v.x, v.y, v.z, v.w);
+}
+
+
+void print_mat4x4(struct Mat4x4 m, const char* label) {
+	int len = strlen(label) + 3;
+	
+	char* spaces = (char*) malloc(sizeof(char) * (len + 1));
+	memset(spaces, ' ', len);
+	
+	for (int i = 0; i < 4; i++) {
+		if (i == 0) {
+			printf("%s : ", label);
+		} else {
+			printf("%s", spaces);
+		}
+		printf("[ %f, %f, %f, %f ]\n", m.v[0][0], m.v[1][0], m.v[2][0], m.v[3][0]);
+	}
+	printf("\n");
+
+	free(spaces);
+}

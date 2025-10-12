@@ -14,7 +14,9 @@ struct Mat4x4 {
 	float v[4][4];
 };
 
-// VECTOR FUNCTIONS
+/*
+* VECTOR FUNCTIONS
+*/
 
 // Scale a vector value by a scalar.
 // returns: the scaled vector.
@@ -48,7 +50,9 @@ float vector_dot(struct Vec4 *v1, struct Vec4 *v2);
 // returns: the cross product of the vectors.
 struct Vec4 vector_cross(struct Vec4 *u, struct Vec4 *v);
 
-// MATRIX FUNCTIONS
+/*
+* MATRIX FUNCTIONS
+*/
 
 // Apply a matrix transformation to a vector.
 // returns: the transformed vector.
@@ -63,6 +67,7 @@ struct Mat4x4 matrix_matrix_mul(struct Mat4x4 mat1, struct Mat4x4 mat2);
 struct Mat4x4 matrix_transpose(struct Mat4x4 *mat);
 
 // Return a Projection Matrix based on given values. 
+// v_fov: vertical field of view, in radians.
 struct Mat4x4 get_proj_matrix(const float near, 
 							  const float far, 
 							  const float v_fov, 
@@ -80,4 +85,20 @@ struct Mat4x4 get_model_matrix(const struct Vec4 *rot,
 // called the view matrix.
 // returns: The view matrix related to a given model matrix.
 struct Mat4x4 get_view_matrix(const struct Mat4x4 cam_model);
+
+/*
+* PRINT FUNCTIONS
+*/
+
+// Print out the given vector in the format:
+// {Label} : [v[0], v[1], v[2], v[3]]
+void print_vec4(struct Vec4 v, const char* label);
+
+// Print out the given matrix in the format:
+// {Label} : [0, 0, 0, 0]
+//           [0, 0, 0, 0]
+//           [0, 0, 0, 0]
+//           [0, 0, 0, 0]
+void print_mat4x4(struct Mat4x4 m, const char* label);
+
 #endif
