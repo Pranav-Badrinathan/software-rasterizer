@@ -95,24 +95,37 @@ void draw_cube(SDL_Surface *surface, double delta) {
 
 	for (int i = 0; i < 12; i++) {
 		struct Triangle t;
+
 		for (int j = 0; j < 3; j++) {
 			t.verts[j] = cube[i].verts[j];
+
+			// C = P * V * M * v_model
+			// Here C is clipspace, P is projection matrix, V is view matrix,
+			// M is model matrix. v_model is vertex in model's object space.
 
 			// This can be done with a model matrix.
 			t.verts[j] = matrix_vec_mul(&model_view, &t.verts[j]);
 
 			// Projection matrix step.
 			t.verts[j] = matrix_vec_mul(&proj, &t.verts[j]);
-			// Projection division step.
+
+			// TODO: Move the later steps to a new loop, do vertex and triangle
+			// culling after projection matrix step, in Clip-space.
+
+			// Projection division step. Converts from Clip-space -> NDC.
 			t.verts[j] = vector_div(&t.verts[j], t.verts[j].w);
 
+			// Viewport transformation steps. Should be the last thing done.
+			// converts from NDC -> screen space.
 			t.verts[j] = vector_add(&t.verts[j], &((struct Vec4){1, 1, 0}));
-			
 			t.verts[j].x *= 0.5f * (float)SCREEN_WIDTH;
 			t.verts[j].y *= 0.5f * (float)SCREEN_HEIGHT;
-
-			/* printf("x: %f, y: %f, w: %f\n", t.verts[j].x, t.verts[j].y, t.verts[j].w); */
 		}
+
+		// TODO: If triangle is not within Camera frustrum, don't render.
+		// for (int j = 0; j < 3; j++) {
+		// 	print_vec4(t.verts[j], "Vert");
+		// }
 
 		struct Vec4 a = vector_sub(&t.verts[0], &t.verts[1]);
 		struct Vec4 b = vector_sub(&t.verts[0], &t.verts[2]);
