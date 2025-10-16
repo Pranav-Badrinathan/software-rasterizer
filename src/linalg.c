@@ -120,12 +120,12 @@ struct Mat4x4 get_proj_matrix(const float near,
 	// Initialize matrix to 0;
 	struct Mat4x4 mat = {0};
 
-	const float atan = 1.0f / tanf(v_fov/2);
+	const float inv_tan = 1.0f / tanf(v_fov/2);
 
-	mat.v[0][0] = aspect_ratio * atan;
-	mat.v[1][1] = atan;
-	mat.v[2][2] = far / (far - near);
-	mat.v[3][2] = (-far * near) / (far - near);
+	mat.v[0][0] = aspect_ratio * inv_tan;
+	mat.v[1][1] = inv_tan;
+	mat.v[2][2] = (far + near) / (near - far);
+	mat.v[3][2] = (2.0f * far * near) / (near - far);
 	mat.v[2][3] = -1.0f;
 	mat.v[3][3] = 0.0f;
 
