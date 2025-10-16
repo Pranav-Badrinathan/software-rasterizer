@@ -3,6 +3,7 @@
 #include "draw.h"
 #include "input.h"
 #include "timing.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <SDL2/SDL_scancode.h>
 #include <SDL2/SDL_surface.h>
@@ -96,6 +97,7 @@ void draw_cube(SDL_Surface *surface, double delta) {
 	for (int i = 0; i < 12; i++) {
 		struct Triangle t;
 
+		// First half of processing till clip space
 		for (int j = 0; j < 3; j++) {
 			t.verts[j] = cube[i].verts[j];
 
@@ -108,10 +110,41 @@ void draw_cube(SDL_Surface *surface, double delta) {
 
 			// Projection matrix step.
 			t.verts[j] = matrix_vec_mul(&proj, &t.verts[j]);
+		}
 
-			// TODO: Move the later steps to a new loop, do vertex and triangle
-			// culling after projection matrix step, in Clip-space.
+		// TODO: If triangle is not within Camera frustrum, don't render.
+		// Culled tris completely out.
+		// Still need to remove vertices and re-triangulate the broken tris.
 
+		uint8_t outcodes[3] = {};
+		for (int j = 0; j < 3; j++) {
+			struct Vec4 v = t.verts[j];
+
+			// If the vertex is clipped at all, the bitwise operations will make
+			// the outcode non-zero. In the future, if needed, we can also get
+			// which plane it is out of bounds with a simple &.
+			outcodes[j] = 0
+				| ((v.x < -v.w) << 0)	// Left plane
+				| ((v.x >  v.w) << 1)	// Right plane
+				| ((v.y < -v.w) << 2)	// Bottom plane
+				| ((v.y >  v.w) << 3)	// Top plane
+				| ((v.z < -v.w) << 4)	// Near plane
+				| ((v.z >  v.w) << 5);	// Far plane
+		}
+
+		if ((outcodes[0] & outcodes[1] & outcodes[2]) > 0) {
+			print_vec4(t.verts[0], "Vec0");
+			print_vec4(t.verts[1], "Vec1");
+			print_vec4(t.verts[2], "Vec2");
+			for (int j = 0; j < 3; j++) {
+				printf("%d ", outcodes[j]);
+			}
+			printf("\n");
+			continue; // entire triangle is out of frustrum, ignore.
+		} // else if for the partial state, where we need to clip tri.
+
+		// Second half of processing till screen space
+		for (int j = 0; j < 3; j++) {
 			// Projection division step. Converts from Clip-space -> NDC.
 			t.verts[j] = vector_div(&t.verts[j], t.verts[j].w);
 
@@ -122,11 +155,6 @@ void draw_cube(SDL_Surface *surface, double delta) {
 			t.verts[j].y *= 0.5f * (float)SCREEN_HEIGHT;
 		}
 
-		// TODO: If triangle is not within Camera frustrum, don't render.
-		// for (int j = 0; j < 3; j++) {
-		// 	print_vec4(t.verts[j], "Vert");
-		// }
-
 		struct Vec4 a = vector_sub(&t.verts[0], &t.verts[1]);
 		struct Vec4 b = vector_sub(&t.verts[0], &t.verts[2]);
 
@@ -134,7 +162,8 @@ void draw_cube(SDL_Surface *surface, double delta) {
 		// 2D cross prod (determinant formula).
 		float winding_order = (a.x * b.y) - (b.x * a.y);
 
-		// Only draw if winding in CCW. CW means backface.
+		// Only draw if winding in CCW. CW means backface, so this just
+		// defines normals.
 		if (winding_order > 0) draw_triangle(surface, t);
 	}
 }
